@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+ <head>
+   <title>Ej: Ejercicio cono </title>
+   <style>
+     html, body { margin: 0; padding: 0; overflow: hidden; }
+   </style>
+ </head>
+ <body>
+   <script src="js/three.min.js"></script>
+   <script>
+   var scene, aspect, camera, renderer;
+   var startTime = Date.now();
+
+	 //tamaño del objeto cubo original
+	 var sx=1;
+	 var sy=1;
+	 var sz=1;
+	 var PI= 3.14;
+	 var sx2=1;
+	 var sy2=3;
+	 var sz2=1;
+	
+
+
+
+   init();
+   animate();
+
+   function init()
+   {
+     scene = new THREE.Scene();
+     aspect = window.innerWidth / window.innerHeight;
+     camera = new THREE.PerspectiveCamera( 45, aspect, 0.1, 1000);
+     renderer = new THREE.WebGLRenderer();
+     renderer.setSize( window.innerWidth, window.innerHeight );
+     document.body.appendChild( renderer.domElement );
+
+     var size = 10;
+     var arrowSize = 5;
+     var divisions = size;
+     var origin = new THREE.Vector3( 0, 0, 0 );
+     var x = new THREE.Vector3( 1, 0, 0 );
+     var y = new THREE.Vector3( 0, 1, 0 );
+		 var z = new THREE.Vector3( 0, 0, 1 );
+		 var color1 = new THREE.Color( 0xFFFFFF );
+		 var color2 = new THREE.Color( 0x333333 );
+		 var colorR = new THREE.Color( 0xFF0000);
+		 var colorG = new THREE.Color( 0x33AA33 );
+		 var colorB = new THREE.Color( 0x333366 );
+
+		 var axesHelper = new THREE.AxesHelper( size );
+		 var gridHelperXY = new THREE.GridHelper( size, divisions, color1, color1);
+		 var gridHelperXZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		 var gridHelperYZ = new THREE.GridHelper( size, divisions, color2, color2 );
+		 gridHelperXY.rotateOnWorldAxis ( x, THREE.Math.degToRad(90) );
+		 gridHelperXZ.rotateOnWorldAxis ( y, THREE.Math.degToRad(90) );
+		 gridHelperYZ.rotateOnWorldAxis ( z, THREE.Math.degToRad(90) );
+		 var arrowX = new THREE.ArrowHelper( x, origin, arrowSize, colorR );
+		 var arrowY = new THREE.ArrowHelper( y, origin, arrowSize, colorG );
+		 var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
+		 //crea la geometria del cono 
+          const geometry = new THREE.ConeGeometry( 1, 1, 10 );
+
+		 //Crea los materiales 
+		 var material = new THREE.LineBasicMaterial( { color: 0x00ff00} );
+		 var material2 = new THREE.LineBasicMaterial( { color: 0xEE3204} );
+		
+
+		 //Crea los cono
+		 var cono  = new THREE.Mesh( geometry, material );//cono
+		 var cono2  = new THREE.Mesh( geometry, material2 );//cono2
+		
+
+         var ang= (90*Math.PI/180);
+		//se aplica la matrizTransformacion en ambos conos
+		 cono.applyMatrix(matrizTransformacion(sx,sy,sz,ang,0.5));
+		 cono.elementsNeedUpdate=true;
+		 
+		 cono2.applyMatrix(matrizTransformacion(sx2,sy2,sz2,ang,1.5));
+		 cono2.elementsNeedUpdate=true;
+		 
+		 var ang2= (80*Math.PI/180);
+         //se aplica la matrizTransformacion2 en el segundo cono
+		 cono2.applyMatrix(matrizTransformacion2(ang,ang2));
+		 cono2.elementsNeedUpdate=true;
+		 
+
+		
+
+		 //Se añaden los 3 cubos 
+		 scene.add( cono );
+		 scene.add( cono2 );
+	
+
+
+		 scene.add( gridHelperXZ );
+		 scene.add( arrowX );
+		 scene.add( arrowY );
+		 scene.add( arrowZ );
+
+		 camera.position.x = 9;
+		 camera.position.y = 5;
+		 camera.position.z =  10;
+	
+
+		 camera.lookAt( origin );
+	 }
+
+	 function animate()
+	 {
+		 render();
+		 requestAnimationFrame( animate );
+	 }
+
+	 function render()
+	 {
+		 var dtime = Date.now()-startTime;
+		  camera.position.x = 10*Math.cos(dtime/10000);
+        camera.position.z = 10*Math.sin(dtime/10000);
+		 camera.lookAt( 0, 0, 0 );
+		 renderer.render( scene, camera);
+	 }
+
+
+
+	 //Funciones de la matriz
+	 function matrizTransformacion(x, y, z,angulo,ty)
+	 {
+	
+		 var cosz = Math.cos(angulo);
+		 var senz = Math.sin(angulo);
+		 var t = new THREE.Matrix4();
+
+		 //Se pone los valores de la traslacion, escalado y rotacion 
+		 t.set
+			   ( 	x, 0, 0, 0,
+ 					0, y*(cosz),-z*(senz) , 0,
+ 					0, y*(senz), z*(cosz), ty,
+ 					0, 0, 0, 1);
+
+			return t;
+		}
+		
+	 function matrizTransformacion2(angulo, angulo2)
+	 {
+		
+	
+		 var cosz = Math.cos(angulo);
+		 var senz = Math.sin(angulo);
+		 var cosx = Math.cos(angulo2);
+		 var senx = Math.sin(angulo2);
+		 var t2 = new THREE.Matrix4();
+
+		 //Se pone los valores de la rotacion y escalado
+		 t2.set
+			   ( 	cosx, -senx*cosz, senx*senz, 0,
+ 					senx, cosx*cosz,-senz*cosx , 0.5,
+ 					0, (senz), (cosz), 0,
+ 					0, 0, 0, 1);
+
+			return t2;
+		}
+	
+
+
+
+   </script>
+ </body>
+</html>
