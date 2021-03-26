@@ -12,18 +12,20 @@
    var scene, aspect, camera, renderer;
    var startTime = Date.now();
 
-	 //tamaño del objeto cubo original
+	 //tamaño del objeto cono original
 	 var sx=1;
 	 var sy=1;
 	 var sz=1;
-	 var PI= 3.14;
-	 var sx2=1;
-	 var sy2=3;
-	 var sz2=1;
 	
 
-
-
+	 var T1 = false;
+	 var T2 = false;
+	 var T3 = false; 
+	 var T4 = false;
+	 var T5 = false;
+     var T6 = false;
+     var T7 = false;
+     var T8 = false;
    init();
    animate();
 
@@ -61,39 +63,69 @@
 		 var arrowZ = new THREE.ArrowHelper( z, origin, arrowSize, colorB );
 		 //crea la geometria del cono 
           const geometry = new THREE.ConeGeometry( 1, 1, 10 );
-
+         //////////////Transformacion primera imagen////////////////
 		 //Crea los materiales 
-		 var material = new THREE.LineBasicMaterial( { color: 0x00ff00} );
-		 var material2 = new THREE.LineBasicMaterial( { color: 0xEE3204} );
+		 var material = new THREE.MeshNormalMaterial({Color:0x33AA33, wireframe: true});
+		  var material2 = new THREE.MeshNormalMaterial( {Color:0x33AA33, wireframe: true} );
 		
 
-		 //Crea los cono
+		 //Crea los conos
 		 var cono  = new THREE.Mesh( geometry, material );//cono
-		 var cono2  = new THREE.Mesh( geometry, material2 );//cono2
-		
-
+	     var cono2  = new THREE.Mesh( geometry, material2 );
+		 
+	
+        //Se aplica la matriz Rotacion en x
          var ang= (90*Math.PI/180);
-		//se aplica la matrizTransformacion en ambos conos
-		 cono.applyMatrix(matrizTransformacion(sx,sy,sz,ang,0.5));
+		 cono.applyMatrix(matrizRotacionX(ang));
+		 cono.elementsNeedUpdate=true;
+
+		 //Se aplica la matriz de traslacion en z
+		 cono.applyMatrix(matrizTraslacionZ(0.5));
+		 cono.elementsNeedUpdate=true;
+		 //Se aplica la matriz Rotacion en z  para ubicar uno de los vertices del cono en el eje x
+		 var ang2= ((360/20)*Math.PI/180);
+		 cono.applyMatrix(matrizRotacionZ(ang2));
 		 cono.elementsNeedUpdate=true;
 		 
-		 cono2.applyMatrix(matrizTransformacion(sx2,sy2,sz2,ang,1.5));
+		 		  //////////////Transformacion segunda imagen////////////////
+		 //Se aplica la matriz Rotacion en x
+         var ang= (90*Math.PI/180);
+		 cono2.applyMatrix(matrizRotacionX(ang));
 		 cono2.elementsNeedUpdate=true;
-		 
-		 var ang2= (80*Math.PI/180);
-         //se aplica la matrizTransformacion2 en el segundo cono
-		 cono2.applyMatrix(matrizTransformacion2(ang,ang2));
-		 cono2.elementsNeedUpdate=true;
-		 
 
+		 //Se aplica la matriz de traslacion en z
+		 cono2.applyMatrix(matrizTraslacionZ(0.5));
+		 cono2.elementsNeedUpdate=true;
+		 //Se aplica la matriz Rotacion en z  para ubicar uno de los vertices del cono en el eje x
+		 var ang2= ((360/20)*Math.PI/180);
+		 cono2.applyMatrix(matrizRotacionZ(ang2));
+		 cono2.elementsNeedUpdate=true;
+		 //Se aplica la matriz de escalar en z
+		 cono2.applyMatrix(matrizEscalarz(3));
+		 cono2.elementsNeedUpdate=true;
+		 //Se aplica la matriz Rotacion en x
+		 cono2.applyMatrix(matrizRotacionX(ang));
+		 cono2.elementsNeedUpdate=true;
+		 
+		 //Se aplica la matriz Rotacion en z 
+		 var ang3= (70*Math.PI/180);
+		 cono2.applyMatrix(matrizRotacionZ(ang3));
+		 cono2.elementsNeedUpdate=true;
+		 
+		 //Se aplica la matriz de traslacion en y
+		 cono2.applyMatrix(matrizTraslacionY(1));
+		 cono2.elementsNeedUpdate=true;
+		 //Se aplica la matriz de traslacion en y
+		 cono2.applyMatrix(matrizTraslacionX(0.3));
+		 cono2.elementsNeedUpdate=true;
 		
 
-		 //Se añaden los 3 cubos 
+		
+		
+		
+		
 		 scene.add( cono );
 		 scene.add( cono2 );
-	
-
-
 		 scene.add( gridHelperXZ );
 		 scene.add( arrowX );
 		 scene.add( arrowY );
@@ -112,6 +144,7 @@
 		 render();
 		 requestAnimationFrame( animate );
 	 }
+	 
 
 	 function render()
 	 {
@@ -121,46 +154,105 @@
 		 camera.lookAt( 0, 0, 0 );
 		 renderer.render( scene, camera);
 	 }
+	 //Funciones de las matrices
+	 function matrizTraslacionZ(tz)
+	 {
+	
+	
+		 var t = new THREE.Matrix4();
 
+		 //Se pone la variable tz, ya que es la unica que se va a trasladar
+		 t.set
+			   ( 	1, 0, 0, 0,
+ 					0, 1, 0 ,0,
+ 					0, 0, 1, tz,
+ 					0, 0, 0, 1);
 
+			return t;
+	}
+    function matrizTraslacionY(ty)
+	 {
+	
+	
+		 var t = new THREE.Matrix4();
 
-	 //Funciones de la matriz
-	 function matrizTransformacion(x, y, z,angulo,ty)
+		 //Se pone la variable tz, ya que es la unica que se va a trasladar
+		 t.set
+			   ( 	1, 0, 0, 0,
+ 					0, 1, 0 ,ty,
+ 					0, 0, 1, 0,
+ 					0, 0, 0, 1);
+
+			return t;
+	}
+	function matrizTraslacionX(tx)
+	{
+	
+	
+		 var t = new THREE.Matrix4();
+
+		 //Se pone la variable tz, ya que es la unica que se va a trasladar
+		 t.set
+			   ( 	1, 0, 0, tx,
+ 					0, 1, 0 ,0,
+ 					0, 0, 1, 0,
+ 					0, 0, 0, 1);
+
+			return t;
+	}
+	 function matrizRotacionX(angulo)
+	 {
+	
+		 var cosx = Math.cos(angulo);
+		 var senx = Math.sin(angulo);
+		 var t = new THREE.Matrix4();
+
+		 //Se pone los valores de Rotacion en x
+		 t.set
+			   ( 	1,    0,      0,    0,
+ 					0, (cosx),-(senx) , 0,
+ 					0, (senx), (cosx),  0,
+ 					0,    0,      0,    1);
+
+			return t;
+	}
+	function matrizRotacionZ(angulo)
 	 {
 	
 		 var cosz = Math.cos(angulo);
 		 var senz = Math.sin(angulo);
 		 var t = new THREE.Matrix4();
 
-		 //Se pone los valores de la traslacion, escalado y rotacion 
+		 //Se pone los valores de Rotacion en en z para ubicar uno de los vertices del cono en el eje x
 		 t.set
-			   ( 	x, 0, 0, 0,
- 					0, y*(cosz),-z*(senz) , 0,
- 					0, y*(senz), z*(cosz), ty,
- 					0, 0, 0, 1);
+			   ( (cosz), -(senz), 0,  0,
+ 				 (senz),  (cosz), 0,  0,
+ 			       0,       0,    1,  0,
+ 				   0,       0,    0,  1);
 
 			return t;
-		}
-		
-	 function matrizTransformacion2(angulo, angulo2)
-	 {
-		
+	}
+	function matrizEscalarz(sz)
+	{
+		 var t = new THREE.Matrix4();
+
+		 //Se pone los valores de Rotacion en en z
+		 t.set
+			   (      1, 0, 0, 0,
+ 				      0, 1, 0, 0,
+ 			          0, 0, sz, 0,
+ 				      0, 0, 0, 1);
+
+			return t;
+	}
 	
-		 var cosz = Math.cos(angulo);
-		 var senz = Math.sin(angulo);
-		 var cosx = Math.cos(angulo2);
-		 var senx = Math.sin(angulo2);
-		 var t2 = new THREE.Matrix4();
+	
 
-		 //Se pone los valores de la rotacion y escalado
-		 t2.set
-			   ( 	cosx, -senx*cosz, senx*senz, 0,
- 					senx, cosx*cosz,-senz*cosx , 0.5,
- 					0, (senz), (cosz), 0,
- 					0, 0, 0, 1);
 
-			return t2;
-		}
+
+	
+		
+
 	
 
 
